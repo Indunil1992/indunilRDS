@@ -8,7 +8,6 @@
         "type": "DIRECTORY",
         "isDirectory": true,
         "children": [
-          "25fdda43-e08e-4d0b-8693-6fe80f5c8024",
           "144d3528-98c7-48df-8e17-0841052cce6c",
           "ac588fb5-fdd3-43c7-98da-4b3daa96b5a0",
           "18d3c7b6-1ebe-46c8-8748-567979ef37f0",
@@ -16,25 +15,6 @@
         ],
         "isRemovable": false,
         "filePath": "indunilRDS"
-      },
-      "25fdda43-e08e-4d0b-8693-6fe80f5c8024": {
-        "id": "25fdda43-e08e-4d0b-8693-6fe80f5c8024",
-        "parent": "2409239e-cb2d-4451-955b-3f7347c6536e",
-        "name": "lambda.js",
-        "type": "JS_LAMBDA",
-        "isDirectory": false,
-        "children": [],
-        "isRemovable": true,
-        "filePath": "indunilRDS/lambda.js",
-        "code": "let SL_AWS = require('slappforge-sdk-aws');\nlet connectionManager = require('./ConnectionManager');\nconst rds = new SL_AWS.RDS(connectionManager);\n\n// You can pass the existing connection to this function.\n// A new connection will be created if it's not present as the third param \n// You must always end/destroy the DB connection after it's used\nrds.query({\n    instanceIdentifier: 'tutorial-db-instance',\n    query: 'CREATE TABLE users (   UserId int NOT NULL AUTO_INCREMENT,  Email varchar(255) NOT NULL UNIQUE,  Password varchar(255) NOT NULL,  LastName varchar(255),  FirstName varchar(255),  Address varchar(255),  PRIMARY KEY (UserId) );',\n    inserts: [\"sachithra@gmail.com\", 123456, \"Rajapakse\", \"Indunil\", \"142 Kandy\"]\n}, function (error, results, connection) {\n    if (error) {\n        console.log(\"Error occurred\");\n        throw error;\n    } else {\n        console.log(\"Success\")\n        console.log(results);\n    }\n\n    connection.end();\n});\n",
-        "config": {
-          "runtime": "nodejs8.10",
-          "handler": "handler",
-          "timeout": 60,
-          "memory": 128,
-          "layers": []
-        },
-        "triggers": []
       },
       "144d3528-98c7-48df-8e17-0841052cce6c": {
         "id": "144d3528-98c7-48df-8e17-0841052cce6c",
@@ -64,7 +44,15 @@
           "memory": 128,
           "layers": []
         },
-        "triggers": []
+        "triggers": [],
+        "testCases": {
+          "d89f60bc-a7da-45f1-8ae6-70c8cc4ea403": {
+            "id": "d89f60bc-a7da-45f1-8ae6-70c8cc4ea403",
+            "name": "Unnamed event",
+            "functionId": "ac588fb5-fdd3-43c7-98da-4b3daa96b5a0",
+            "event": "{\n  \"email\": \"indunil@adroitlogic.com\",\n  \"password\": \"12345678\",\n  \"lastName\": \"Navagamuwa\",\n  \"firstName\": \"Randika\",\n  \"address\": \"12 A /5, Pirivena Rd, Mount Lavinia\"\n}"
+          }
+        }
       },
       "18d3c7b6-1ebe-46c8-8748-567979ef37f0": {
         "id": "18d3c7b6-1ebe-46c8-8748-567979ef37f0",
@@ -97,16 +85,17 @@
         "code": "{\r\n  \"name\": \"simple-authenticator\",\r\n  \"version\": \"1.0.0\",\r\n  \"dependencies\": {\r\n    \"aws-sdk\": \"2.176.0\",\r\n    \"@slappforge/slappforge-sdk\": \"0.0.3\"\r\n  }\r\n}"
       }
     },
-    "deletedFiles": [],
+    "deletedFiles": [
+      "indunilRDS/lambda.js"
+    ],
     "rootNode": "2409239e-cb2d-4451-955b-3f7347c6536e",
     "openFiles": [
-      "25fdda43-e08e-4d0b-8693-6fe80f5c8024",
       "ac588fb5-fdd3-43c7-98da-4b3daa96b5a0",
       "18d3c7b6-1ebe-46c8-8748-567979ef37f0",
       "144d3528-98c7-48df-8e17-0841052cce6c",
       "38ea4a65-e107-4b80-bff1-e6271354e76c"
     ],
-    "currentFileId": "25fdda43-e08e-4d0b-8693-6fe80f5c8024",
+    "currentFileId": "ac588fb5-fdd3-43c7-98da-4b3daa96b5a0",
     "resources": {
       "rds-tutorial-db-instance": {
         "name": "rds-tutorial-db-instance",
@@ -182,7 +171,7 @@
     "projectRegion": "us-west-2",
     "platform": "AWS",
     "platformRegions": {},
-    "lastSave": 1562158864003
+    "lastSave": 1562159477342
   },
   "VCS_STATE": {
     "provider": "GitHub",
