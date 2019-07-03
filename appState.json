@@ -85,9 +85,7 @@
         "code": "{\r\n  \"name\": \"simple-authenticator\",\r\n  \"version\": \"1.0.0\",\r\n  \"dependencies\": {\r\n    \"aws-sdk\": \"2.176.0\",\r\n    \"@slappforge/slappforge-sdk\": \"0.0.3\"\r\n  }\r\n}"
       }
     },
-    "deletedFiles": [
-      "indunilRDS/lambda.js"
-    ],
+    "deletedFiles": [],
     "rootNode": "2409239e-cb2d-4451-955b-3f7347c6536e",
     "openFiles": [
       "ac588fb5-fdd3-43c7-98da-4b3daa96b5a0",
@@ -156,10 +154,8 @@
       "dependencies": {
         "slappforge-sdk-aws": {
           "name": "slappforge-sdk-aws",
-          "language": "javascript",
           "version": "0.0.5",
-          "dev": false,
-          "notRemovable": false
+          "language": "javascript"
         }
       }
     }
@@ -171,7 +167,7 @@
     "projectRegion": "us-west-2",
     "platform": "AWS",
     "platformRegions": {},
-    "lastSave": 1562159477342
+    "lastSave": 1562159619460
   },
   "VCS_STATE": {
     "provider": "GitHub",
