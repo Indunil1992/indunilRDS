@@ -1,29 +1,32 @@
 {
   "EDITOR_STATE": {
     "allProjectFiles": {
-      "42c10f9b-576c-4897-8d68-8da3817b6a41": {
-        "id": "42c10f9b-576c-4897-8d68-8da3817b6a41",
+      "2409239e-cb2d-4451-955b-3f7347c6536e": {
+        "id": "2409239e-cb2d-4451-955b-3f7347c6536e",
         "parent": null,
         "name": "indunilRDS",
         "type": "DIRECTORY",
         "isDirectory": true,
         "children": [
-          "8d9335ae-2f8a-497a-b010-a9d7c60a6718",
-          "f237a3f3-8b6b-44cd-a08b-723eb5c2eefc"
+          "25fdda43-e08e-4d0b-8693-6fe80f5c8024",
+          "144d3528-98c7-48df-8e17-0841052cce6c",
+          "ac588fb5-fdd3-43c7-98da-4b3daa96b5a0",
+          "18d3c7b6-1ebe-46c8-8748-567979ef37f0",
+          "38ea4a65-e107-4b80-bff1-e6271354e76c"
         ],
         "isRemovable": false,
         "filePath": "indunilRDS"
       },
-      "8d9335ae-2f8a-497a-b010-a9d7c60a6718": {
-        "id": "8d9335ae-2f8a-497a-b010-a9d7c60a6718",
-        "parent": "42c10f9b-576c-4897-8d68-8da3817b6a41",
+      "25fdda43-e08e-4d0b-8693-6fe80f5c8024": {
+        "id": "25fdda43-e08e-4d0b-8693-6fe80f5c8024",
+        "parent": "2409239e-cb2d-4451-955b-3f7347c6536e",
         "name": "lambda.js",
         "type": "JS_LAMBDA",
         "isDirectory": false,
         "children": [],
         "isRemovable": true,
         "filePath": "indunilRDS/lambda.js",
-        "code": "let SL_AWS = require('slappforge-sdk-aws');\nlet connectionManager = require('./ConnectionManager');\nconst rds = new SL_AWS.RDS(connectionManager);\n\nexports.handler = function (event, context, callback) {\n\n\n\n\n    // You must always end/destroy the DB connection after it's used\n    rds.beginTransaction({\n        instanceIdentifier: 'indunil'\n    }, function (error, connection) {\n        if (error) {\n            throw error;\n        }\n    });\n\n\n    callback(null, { \"message\": \"Successfully executed\" });\n}",
+        "code": "let SL_AWS = require('slappforge-sdk-aws');\nlet connectionManager = require('./ConnectionManager');\nconst rds = new SL_AWS.RDS(connectionManager);\n\nexports.handler = function (event, context, callback) {\n\n\n    // You can pass the existing connection to this function.\n    // A new connection will be created if it's not present as the third param \n    // You must always end/destroy the DB connection after it's used\n    rds.query({\n        instanceIdentifier: 'tutorial-db-instance',\n        query: 'CREATE TABLE users (   UserId int NOT NULL AUTO_INCREMENT,  Email varchar(255) NOT NULL UNIQUE,  Password varchar(255) NOT NULL,  LastName varchar(255),  FirstName varchar(255),  Address varchar(255),  PRIMARY KEY (UserId) );',\n        inserts: [1, induni, Rajapakase, 142]\n    }, function (error, results, connection) {\n        if (error) {\n            console.log(\"Error occurred\");\n            throw error;\n        } else {\n            console.log(\"Success\")\n            console.log(results);\n        }\n\n        connection.end();\n    });\n\n\n\n\n    callback(null, { \"message\": \"Successfully executed\" });\n}",
         "config": {
           "runtime": "nodejs8.10",
           "handler": "handler",
@@ -33,61 +36,112 @@
         },
         "triggers": []
       },
-      "f237a3f3-8b6b-44cd-a08b-723eb5c2eefc": {
-        "id": "f237a3f3-8b6b-44cd-a08b-723eb5c2eefc",
-        "parent": "42c10f9b-576c-4897-8d68-8da3817b6a41",
+      "144d3528-98c7-48df-8e17-0841052cce6c": {
+        "id": "144d3528-98c7-48df-8e17-0841052cce6c",
+        "parent": "2409239e-cb2d-4451-955b-3f7347c6536e",
         "name": "ConnectionManager.js",
         "type": "JS_FILE",
         "isDirectory": false,
         "children": [],
         "isRemovable": true,
         "filePath": "indunilRDS/ConnectionManager.js",
-        "code": "module.exports = function() {\n    this.dbConnections = [];\n\n    this.dbConnections[\"indunil\"] = {\n        host: process.env.EndPoint_rdsIndunil,\n        port: process.env.Port_rdsIndunil,\n        user: process.env.User_rdsIndunil,\n        password: process.env.Password_rdsIndunil,\n        database: \"indunil\"\n    };\n};"
+        "code": "module.exports = function() {\n    this.dbConnections = [];\n\n    this.dbConnections[\"tutorial-db-instance\"] = {\n        host: \"tutorial-db-instance.c706clkpngya.us-west-2.rds.amazonaws.com\",\n        port: \"3306\",\n        user: \"tutorial_user\",\n        password: process.env.Password_rdsTutorialDbInstance,\n        database: \"tutorial_user\"\n    };\n};"
+      },
+      "ac588fb5-fdd3-43c7-98da-4b3daa96b5a0": {
+        "id": "ac588fb5-fdd3-43c7-98da-4b3daa96b5a0",
+        "parent": "2409239e-cb2d-4451-955b-3f7347c6536e",
+        "name": "SignUp.js",
+        "type": "JS_LAMBDA",
+        "isDirectory": false,
+        "children": [],
+        "isRemovable": true,
+        "filePath": "indunilRDS/SignUp.js",
+        "code": "let AWS = require('aws-sdk');\nlet connectionManager = require('./ConnectionManager');\nlet SL = require('@slappforge/slappforge-sdk');\nconst rds = new SL.AWS.RDS(connectionManager);\nexports.handler = function (event, context, callback) {\n\n    let response;\n\tlet inserts = [event.email, event.password, event.lastName, event.firstName, event.address]; \n\t// Replace the query with the actual query\n\t// You can pass the existing connection to this function.\n\t// A new connection will be created if it's not present as the third param \n\t// You must always end the DB connection after it's used\n\trds.query({\n\t\tinstanceIdentifier: 'authDatabase',\n\t\tquery: 'INSERT INTO users (Email, Password, LastName, FirstName, Address) VALUES (?, ?, ?, ?, ?);',\n\t\tinserts: inserts\n\t}, function (error, results, connection) {\n\t\tif (error) {\n\t\t\tresponse = error;\n\t\t\tthrow error;\n\t\t} else {\n\t\t\tresponse = \"Successfully added a new user with email\";\n\t\t\tconsole.log(results);\n\t\t}\n\t\tconnection.end();\n\t\tcallback(null, response);\n\t});\n}",
+        "config": {
+          "runtime": "nodejs8.10",
+          "handler": "handler",
+          "timeout": 60,
+          "memory": 128,
+          "layers": []
+        },
+        "triggers": []
+      },
+      "18d3c7b6-1ebe-46c8-8748-567979ef37f0": {
+        "id": "18d3c7b6-1ebe-46c8-8748-567979ef37f0",
+        "parent": "2409239e-cb2d-4451-955b-3f7347c6536e",
+        "name": "Signin.js",
+        "type": "JS_LAMBDA",
+        "isDirectory": false,
+        "children": [],
+        "isRemovable": true,
+        "filePath": "indunilRDS/Signin.js",
+        "code": "let AWS = require('aws-sdk');\nlet connectionManager = require('./ConnectionManager');\nlet SL = require('@slappforge/slappforge-sdk');\nconst rds = new SL.AWS.RDS(connectionManager);\nexports.handler = function (event, context, callback) {\n\n    let successfullyLoggedIn = false;\n\tlet inserts = [event.email, event.password];\n\t// Replace the query with the actual query\n\t// You can pass the existing connection to this function.\n\t// A new connection will be created if it's not present as the third param \n\t// You must always end the DB connection after it's used\n\trds.query({\n\t\tinstanceIdentifier: 'authDatabase',\n\t\tquery: 'SELECT * FROM users WHERE Email = ? AND Password = ?',\n\t\tinserts: inserts\n\t}, function (error, results, connection) {\n\t\tif (error) {\n\t\t\tthrow error;\n\t\t} else {\n\t\t\tsuccessfullyLoggedIn = results.length > 0;\n\t\t}\n\n\t\tconnection.end();\n\t\tcallback(null, successfullyLoggedIn);\n\t});\n}",
+        "config": {
+          "runtime": "nodejs8.10",
+          "handler": "handler",
+          "timeout": 60,
+          "memory": 128,
+          "layers": []
+        },
+        "triggers": []
+      },
+      "38ea4a65-e107-4b80-bff1-e6271354e76c": {
+        "id": "38ea4a65-e107-4b80-bff1-e6271354e76c",
+        "parent": "2409239e-cb2d-4451-955b-3f7347c6536e",
+        "name": "package.js",
+        "type": "JS_FILE",
+        "isDirectory": false,
+        "children": [],
+        "isRemovable": true,
+        "filePath": "indunilRDS/package.js",
+        "code": "{\r\n  \"name\": \"simple-authenticator\",\r\n  \"version\": \"1.0.0\",\r\n  \"dependencies\": {\r\n    \"aws-sdk\": \"2.176.0\",\r\n    \"@slappforge/slappforge-sdk\": \"0.0.3\"\r\n  }\r\n}"
       }
     },
     "deletedFiles": [],
-    "rootNode": "42c10f9b-576c-4897-8d68-8da3817b6a41",
+    "rootNode": "2409239e-cb2d-4451-955b-3f7347c6536e",
     "openFiles": [
-      "8d9335ae-2f8a-497a-b010-a9d7c60a6718"
+      "25fdda43-e08e-4d0b-8693-6fe80f5c8024",
+      "ac588fb5-fdd3-43c7-98da-4b3daa96b5a0",
+      "18d3c7b6-1ebe-46c8-8748-567979ef37f0",
+      "144d3528-98c7-48df-8e17-0841052cce6c",
+      "38ea4a65-e107-4b80-bff1-e6271354e76c"
     ],
-    "currentFileId": "8d9335ae-2f8a-497a-b010-a9d7c60a6718",
+    "currentFileId": "38ea4a65-e107-4b80-bff1-e6271354e76c",
     "resources": {
-      "rds-indunil": {
-        "name": "rds-indunil",
+      "rds-tutorial-db-instance": {
+        "name": "rds-tutorial-db-instance",
         "type": "RDS",
         "config": {
           "editMode": false,
-          "operation": 1,
+          "operation": 0,
           "rdsInstance": {
             "rdsEngineType": "mysql",
-            "rdsEdition": "",
+            "rdsEdition": "mysql",
             "rdsInstanceSpec": {
-              "dbInstanceClass": "db.t2.micro",
+              "dbInstanceClass": "db.t2.small",
               "dbLicenseModel": "general-public-license",
-              "dbEngineVersion": "5.7.19"
+              "dbEngineVersion": "5.6.37"
             },
             "rdsSetting": {
-              "instanceIdentifier": "indunil",
-              "masterUsername": "indunil",
-              "masterPassword": "sachithra"
+              "instanceIdentifier": "tutorial-db-instance",
+              "masterUsername": "tutorial_user",
+              "masterPassword": "Sachithra@142"
             },
             "rdsDBOptions": {
-              "dbName": "indunil",
-              "dbPort": "3306"
+              "dbName": "tutorial_user",
+              "dbPort": 3306
             },
-            "rdsInstanceArn": "",
-            "Host": "",
-            "doesExist": false,
-            "initializationQuery": "",
-            "alreadyDeployed": false
+            "rdsInstanceArn": "arn:aws:rds:us-west-2:318300609668:db:tutorial-db-instance",
+            "Host": "tutorial-db-instance.c706clkpngya.us-west-2.rds.amazonaws.com",
+            "doesExist": true
           },
           "rdsInstanceResources": [],
-          "projectRegion": "us-east-2",
-          "mode": 0,
+          "projectRegion": "us-west-2",
+          "mode": 1,
           "additionalFiles": [],
           "params": {
-            "query": "",
-            "inserts": ""
+            "query": "CREATE TABLE users (   UserId int NOT NULL AUTO_INCREMENT,  Email varchar(255) NOT NULL UNIQUE,  Password varchar(255) NOT NULL,  LastName varchar(255),  FirstName varchar(255),  Address varchar(255),  PRIMARY KEY (UserId) );",
+            "inserts": "1,induni,Rajapakase,142"
           },
           "isGlobalEditMode": false,
           "enableInject": true,
@@ -123,12 +177,12 @@
   },
   "PROJECT_META": {
     "projectName": "indunilRDS",
-    "projectDescription": "RDS",
+    "projectDescription": "xcx",
     "projectVersion": "1.0.0",
-    "projectRegion": "us-east-2",
+    "projectRegion": "us-west-2",
     "platform": "AWS",
     "platformRegions": {},
-    "lastSave": 1561622381273
+    "lastSave": 1562158283732
   },
   "VCS_STATE": {
     "provider": "GitHub",
