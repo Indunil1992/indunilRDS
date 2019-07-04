@@ -1,7 +1,10 @@
-let AWS = require('aws-sdk');
+//let AWS = require('aws-sdk');
+let SL_AWS = require('slappforge-sdk-aws');
+//let connectionManager = require('./ConnectionManager');
 let connectionManager = require('./ConnectionManager');
-let SL = require('@slappforge/slappforge-sdk');
-const rds = new SL.AWS.RDS(connectionManager);
+//let SL = require('@slappforge/slappforge-sdk');
+const rds = new SL_AWS.RDS(connectionManager);
+//const rds = new SL.AWS.RDS(connectionManager);
 exports.handler = function (event, context, callback) {
 
     let successfullyLoggedIn = false;
