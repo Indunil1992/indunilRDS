@@ -11,7 +11,8 @@
           "144d3528-98c7-48df-8e17-0841052cce6c",
           "ac588fb5-fdd3-43c7-98da-4b3daa96b5a0",
           "18d3c7b6-1ebe-46c8-8748-567979ef37f0",
-          "38ea4a65-e107-4b80-bff1-e6271354e76c"
+          "38ea4a65-e107-4b80-bff1-e6271354e76c",
+          "85f803d3-43a6-4693-846b-3333d063ae20"
         ],
         "isRemovable": false,
         "filePath": "indunilRDS"
@@ -25,7 +26,7 @@
         "children": [],
         "isRemovable": true,
         "filePath": "indunilRDS/ConnectionManager.js",
-        "code": "module.exports = function() {\n    this.dbConnections = [];\n\n    this.dbConnections[\"tutorial-db-instance\"] = {\n        host: \"tutorial-db-instance.c706clkpngya.us-west-2.rds.amazonaws.com\",\n        port: \"3306\",\n        user: \"tutorial_user\",\n        password: process.env.Password_rdsTutorialDbInstance,\n        database: \"tutorial_user\"\n    };\n};"
+        "code": "module.exports = function() {\n    this.dbConnections = [];\n\n    this.dbConnections[\"tutorial-db-instance\"] = {\n        host: \"tutorial-db-instance.c706clkpngya.us-west-2.rds.amazonaws.com\",\n        port: \"3306\",\n        user: \"tutorial_user\",\n        password: process.env.Password_rdsTutorialDbInstance,\n        database: \"tutorial_user\"\n    };\n    this.dbConnections[\"authDatabase\"] = {\n        host: process.env.EndPoint_rdsAuthDatabase,\n        port: process.env.Port_rdsAuthDatabase,\n        user: process.env.User_rdsAuthDatabase,\n        password: process.env.Password_rdsAuthDatabase,\n        database: \"sample\"\n    };\n};"
       },
       "ac588fb5-fdd3-43c7-98da-4b3daa96b5a0": {
         "id": "ac588fb5-fdd3-43c7-98da-4b3daa96b5a0",
@@ -36,7 +37,7 @@
         "children": [],
         "isRemovable": true,
         "filePath": "indunilRDS/SignUp.js",
-        "code": "let AWS = require('aws-sdk');\nlet connectionManager = require('./ConnectionManager');\nlet SL = require('@slappforge/slappforge-sdk');\nconst rds = new SL.AWS.RDS(connectionManager);\nexports.handler = function (event, context, callback) {\n\n    let response;\n\tlet inserts = [event.email, event.password, event.lastName, event.firstName, event.address]; \n\t// Replace the query with the actual query\n\t// You can pass the existing connection to this function.\n\t// A new connection will be created if it's not present as the third param \n\t// You must always end the DB connection after it's used\n\trds.query({\n\t\tinstanceIdentifier: 'authDatabase',\n\t\tquery: 'INSERT INTO users (Email, Password, LastName, FirstName, Address) VALUES (?, ?, ?, ?, ?);',\n\t\tinserts: inserts\n\t}, function (error, results, connection) {\n\t\tif (error) {\n\t\t\tresponse = error;\n\t\t\tthrow error;\n\t\t} else {\n\t\t\tresponse = \"Successfully added a new user with email\";\n\t\t\tconsole.log(results);\n\t\t}\n\t\tconnection.end();\n\t\tcallback(null, response);\n\t});\n}",
+        "code": "let SL_AWS = require('slappforge-sdk-aws');\nlet connectionManager = require('./ConnectionManager');\n//let SL = require('@slappforge/slappforge-sdk');\nconst rds = new SL_AWS.RDS(connectionManager);\nexports.handler = function (event, context, callback) {\n\n    let response;\n\tlet inserts = [event.email, event.password, event.lastName, event.firstName, event.address]; \n\t// Replace the query with the actual query\n\t// You can pass the existing connection to this function.\n\t// A new connection will be created if it's not present as the third param \n\t// You must always end the DB connection after it's used\n\trds.query({\n\t\tinstanceIdentifier: 'authDatabase',\n\t\tquery: 'INSERT INTO users (Email, Password, LastName, FirstName, Address) VALUES (?, ?, ?, ?, ?);',\n\t\tinserts: inserts\n\t}, function (error, results, connection) {\n\t\tif (error) {\n\t\t\tresponse = error;\n\t\t\tthrow error;\n\t\t} else {\n\t\t\tresponse = \"Successfully added a new user with email\";\n\t\t\tconsole.log(results);\n\t\t}\n\t\tconnection.end();\n\t\tcallback(null, response);\n\t});\n}",
         "config": {
           "runtime": "nodejs8.10",
           "handler": "handler",
@@ -83,6 +84,25 @@
         "isRemovable": true,
         "filePath": "indunilRDS/package.js",
         "code": "{\r\n  \"name\": \"simple-authenticator\",\r\n  \"version\": \"1.0.0\",\r\n  \"dependencies\": {\r\n    \"aws-sdk\": \"2.176.0\",\r\n    \"@slappforge/slappforge-sdk\": \"0.0.3\"\r\n  }\r\n}"
+      },
+      "85f803d3-43a6-4693-846b-3333d063ae20": {
+        "id": "85f803d3-43a6-4693-846b-3333d063ae20",
+        "parent": "2409239e-cb2d-4451-955b-3f7347c6536e",
+        "name": "lam.js",
+        "type": "JS_LAMBDA",
+        "isDirectory": false,
+        "children": [],
+        "isRemovable": true,
+        "filePath": "indunilRDS/lam.js",
+        "code": "let SL_AWS = require('slappforge-sdk-aws');\nlet connectionManager = require('./ConnectionManager');\nconst rds = new SL_AWS.RDS(connectionManager);\n\nexports.handler = function (event, context, callback) {\n\n\n\n    // You can pass the existing connection to this function.\n    // A new connection will be created if it's not present as the third param \n    // You must always end/destroy the DB connection after it's used\n    rds.query({\n        instanceIdentifier: 'authDatabase',\n        query: 'CREATE TABLE users (   UserId int NOT NULL AUTO_INCREMENT,  Email varchar(255) NOT NULL UNIQUE,  Password varchar(255) NOT NULL,  LastName varchar(255),  FirstName varchar(255),  Address varchar(255),  PRIMARY KEY (UserId) );',\n        inserts: [(\"indununil@adroitlogic.com\", \"123\", \"Raj\", \"ind\", \"Colombo\")]\n    }, function (error, results, connection) {\n        if (error) {\n            console.log(\"Error occurred\");\n            throw error;\n        } else {\n            console.log(\"Success\")\n            console.log(results);\n        }\n\n        connection.end();\n    });\n\n\n\n    callback(null, { \"message\": \"Successfully executed\" });\n}",
+        "config": {
+          "runtime": "nodejs8.10",
+          "handler": "handler",
+          "timeout": 60,
+          "memory": 128,
+          "layers": []
+        },
+        "triggers": []
       }
     },
     "deletedFiles": [],
@@ -134,6 +154,48 @@
           "enableInject": true,
           "isNewFromGlobal": true
         }
+      },
+      "rds-authDatabase": {
+        "name": "rds-authDatabase",
+        "type": "RDS",
+        "config": {
+          "editMode": false,
+          "operation": 0,
+          "rdsInstance": {
+            "rdsEngineType": "mysql",
+            "rdsEdition": "",
+            "rdsInstanceSpec": {
+              "dbInstanceClass": "db.t2.micro",
+              "dbLicenseModel": "general-public-license",
+              "dbEngineVersion": "5.7.19"
+            },
+            "rdsSetting": {
+              "instanceIdentifier": "authDatabase",
+              "masterUsername": "tutorial",
+              "masterPassword": "Sachithra142"
+            },
+            "rdsDBOptions": {
+              "dbName": "sample",
+              "dbPort": "3306"
+            },
+            "rdsInstanceArn": "",
+            "Host": "",
+            "doesExist": false,
+            "initializationQuery": "CREATE TABLE users ( \n UserId int NOT NULL AUTO_INCREMENT,\n Email varchar(255) NOT NULL UNIQUE,\n Password varchar(255) NOT NULL,\n LastName varchar(255),\n FirstName varchar(255),\n Address varchar(255),\n PRIMARY KEY (UserId)\n);",
+            "alreadyDeployed": false
+          },
+          "rdsInstanceResources": [],
+          "projectRegion": "us-west-2",
+          "mode": 0,
+          "additionalFiles": [],
+          "params": {
+            "query": "CREATE TABLE users (   UserId int NOT NULL AUTO_INCREMENT,  Email varchar(255) NOT NULL UNIQUE,  Password varchar(255) NOT NULL,  LastName varchar(255),  FirstName varchar(255),  Address varchar(255),  PRIMARY KEY (UserId) );",
+            "inserts": "(\"indununil@adroitlogic.com\",\"123\",\"Raj\",\"ind\",\"Colombo\")"
+          },
+          "isGlobalEditMode": false,
+          "enableInject": true,
+          "isNewFromGlobal": false
+        }
       }
     },
     "customTemplate": {
@@ -154,8 +216,10 @@
       "dependencies": {
         "slappforge-sdk-aws": {
           "name": "slappforge-sdk-aws",
+          "language": "javascript",
           "version": "0.0.5",
-          "language": "javascript"
+          "dev": false,
+          "notRemovable": false
         }
       }
     }
@@ -167,7 +231,7 @@
     "projectRegion": "us-west-2",
     "platform": "AWS",
     "platformRegions": {},
-    "lastSave": 1562159619460
+    "lastSave": 1562218868789
   },
   "VCS_STATE": {
     "provider": "GitHub",
